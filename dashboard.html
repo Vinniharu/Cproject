@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2 - Station - Command Center</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard-styles.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+</head>
+<body>
+    <div class="container">
+        <div class="title-bar">
+            <div class="title-bar-text">C2 - Station - Command Center</div>
+            <div class="title-bar-controls">
+                <button class="title-bar-button" id="minimize-btn">─</button>
+                <button class="title-bar-button" id="maximize-btn">□</button>
+                <button class="title-bar-button" id="close-btn">✕</button>
+            </div>
+        </div>
+
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1 class="dashboard-title">C2 - STATION</h1>
+                <span class="status-indicator">● SYSTEM ACTIVE</span>
+            </div>
+            <div class="header-center">
+                <nav class="main-nav">
+                    <button class="nav-button active" data-view="devices">DEVICES</button>
+                    <button class="nav-button" data-view="analytics">ANALYTICS</button>
+                    <button class="nav-button" data-view="alerts">ALERTS</button>
+                    <button class="nav-button admin-only" data-view="admin">ADMIN</button>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span class="user-role"></span>
+                    <span class="user-name"></span>
+                </div>
+                <button class="logout-btn">LOGOUT</button>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <!-- Devices View -->
+            <div id="devices-view" class="view-container active">
+                <div class="view-header">
+                    <h2>TRACKED DEVICES</h2>
+                    <div class="view-actions">
+                        <button class="refresh-btn" id="refresh-devices-btn">
+                            <span class="refresh-icon">🔄</span>
+                            REFRESH
+                        </button>
+                        <div class="view-toggle">
+                            <button class="toggle-btn active" id="grid-view-btn" title="Grid View">
+                                <span class="toggle-icon">⚏</span>
+                            </button>
+                            <button class="toggle-btn" id="list-view-btn" title="List View">
+                                <span class="toggle-icon">☰</span>
+                            </button>
+                        </div>
+                        <input type="text" class="search-input" placeholder="Search devices...">
+                    </div>
+                </div>
+                
+                <div class="devices-grid" id="devices-grid">
+                    <!-- Device cards will be injected here -->
+                </div>
+            </div>
+
+            <!-- Analytics View -->
+            <div id="analytics-view" class="view-container">
+                <div class="view-header">
+                    <h2>SYSTEM ANALYTICS</h2>
+                </div>
+                <div class="analytics-content">
+                    <div class="stat-card">
+                        <h3>TOTAL DEVICES</h3>
+                        <div class="stat-value" id="total-devices">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>ACTIVE TRACKING</h3>
+                        <div class="stat-value" id="active-tracking">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>ALERTS TODAY</h3>
+                        <div class="stat-value" id="alerts-today">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>SYSTEM UPTIME</h3>
+                        <div class="stat-value">99.9%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts View -->
+            <div id="alerts-view" class="view-container">
+                <div class="view-header">
+                    <h2>SYSTEM ALERTS</h2>
+                </div>
+                <div class="alerts-list">
+                    <div class="alert-item info">
+                        <span class="alert-time">10:23</span>
+                        <span class="alert-message">System initialized successfully</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin View -->
+            <div id="admin-view" class="view-container">
+                <div class="view-header">
+                    <h2>ADMIN CONTROL PANEL</h2>
+                </div>
+                <div class="admin-content">
+                    <div class="admin-section">
+                        <h3>USER MANAGEMENT</h3>
+                        <button class="action-btn" onclick="window.location.href='admin-dashboard.html'">MANAGE USERS</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Device Details Modal -->
+        <div id="device-modal" class="modal">
+            <div class="modal-content device-modal">
+                <div class="modal-header">
+                    <div class="device-name-container">
+                        <h2 id="device-name">DEVICE DETAILS</h2>
+                        <button class="edit-name-btn admin-only" onclick="openEditNameModal()" title="Edit device name">
+                            ✏️
+                        </button>
+                    </div>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="device-info">
+                        <div class="info-row">
+                            <span class="info-label">Device ID:</span>
+                            <span id="device-id"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Original Name:</span>
+                            <span id="device-original-name"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Model:</span>
+                            <span id="device-model"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Platform:</span>
+                            <span id="device-platform"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">OS Version:</span>
+                            <span id="device-os"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">App Version:</span>
+                            <span id="device-app-version"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Status:</span>
+                            <span id="device-status"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Location:</span>
+                            <span id="device-location"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Battery:</span>
+                            <span id="device-battery"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Last Seen:</span>
+                            <span id="device-last-seen"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Registered:</span>
+                            <span id="device-created"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Mapping Status:</span>
+                            <span id="device-mapping-status"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="device-controls">
+                        <h3>DEVICE CONTROLS</h3>
+                        <div class="control-grid">
+                            <button class="control-btn" id="record-audio">
+                                <span class="control-icon">🎤</span>
+                                <span>RECORD AUDIO</span>
+                            </button>
+                            <button class="control-btn" id="record-video">
+                                <span class="control-icon">📹</span>
+                                <span>RECORD VIDEO</span>
+                            </button>
+                            <button class="control-btn" id="stream-audio">
+                                <span class="control-icon">🎧</span>
+                                <span>LIVE AUDIO</span>
+                            </button>
+                            <button class="control-btn" id="stream-video">
+                                <span class="control-icon">📺</span>
+                                <span>LIVE VIDEO</span>
+                            </button>
+                            <button class="control-btn" id="live-location">
+                                <span class="control-icon">📍</span>
+                                <span>LIVE LOCATION</span>
+                            </button>
+                            <button class="control-btn danger admin-only" id="remove-device">
+                                <span class="control-icon">⚠️</span>
+                                <span>REMOVE DEVICE</span>
+                            </button>
+                            <button class="control-btn" id="schedule-recording">
+                                <span class="control-icon">📅</span>
+                                <span>SCHEDULE RECORDING</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="location-display" class="location-display hidden">
+                        <h3>LIVE LOCATION</h3>
+                        <div class="location-info">
+                            <p>Latitude: <span id="lat">0.0000</span></p>
+                            <p>Longitude: <span id="lng">0.0000</span></p>
+                            <p>Last Updated: <span id="location-time">--:--</span></p>
+                        </div>
+                        <div class="location-actions">
+                            <button class="action-btn primary" id="open-maps-btn">
+                                <span class="control-icon">🗺️</span>
+                                <span>VIEW ON MAP</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Saved Content Sections -->
+                    <div class="saved-content">
+                        <h3>SAVED CONTENT</h3>
+                        
+                        <!-- Audio Recordings -->
+                        <div class="content-section" id="audio-section">
+                            <h4>🎤 AUDIO RECORDINGS</h4>
+                            <div class="recordings-list" id="audio-recordings">
+                                <!-- Audio recordings will be injected here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Video Recordings -->
+                        <div class="content-section" id="video-section">
+                            <h4>📹 VIDEO RECORDINGS</h4>
+                            <div class="recordings-list" id="video-recordings">
+                                <!-- Video recordings will be injected here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Last Known Location -->
+                        <div class="content-section" id="location-section">
+                            <h4>📍 LAST KNOWN LOCATION</h4>
+                            <div class="last-location-info" id="last-location">
+                                <!-- Last location info will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Modals -->
+        <div id="confirm-modal-1" class="modal">
+            <div class="modal-content confirm-modal">
+                <h2>⚠️ WARNING</h2>
+                <p>Are you sure you want to remove this device from tracking?</p>
+                <p class="warning-text">This action will stop all monitoring capabilities.</p>
+                <div class="modal-actions">
+                    <button class="action-btn cancel-btn">CANCEL</button>
+                    <button class="action-btn danger continue-btn">CONTINUE</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="confirm-modal-2" class="modal">
+            <div class="modal-content confirm-modal">
+                <h2>⚠️ CONFIRM REMOVAL</h2>
+                <p>This will permanently remove the device from the system.</p>
+                <p class="warning-text">All tracking data will be lost.</p>
+                <div class="modal-actions">
+                    <button class="action-btn cancel-btn">CANCEL</button>
+                    <button class="action-btn danger continue-btn">CONFIRM</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="confirm-modal-3" class="modal">
+            <div class="modal-content confirm-modal">
+                <h2>🚨 FINAL CONFIRMATION</h2>
+                <p>Type "REMOVE" to confirm device removal:</p>
+                <input type="text" id="confirm-input" class="confirm-input" placeholder="Type REMOVE">
+                <div class="modal-actions">
+                    <button class="action-btn cancel-btn">CANCEL</button>
+                    <button class="action-btn danger" id="final-confirm-btn" disabled>REMOVE DEVICE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Recording Modal -->
+        <div id="schedule-modal" class="modal">
+            <div class="modal-content schedule-modal">
+                <div class="modal-header">
+                    <h2>SCHEDULE RECORDING</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="schedule-form">
+                        <div class="form-group">
+                            <label>Recording Type</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="recordingType" value="audio" checked>
+                                    <span>🎤 Audio Recording</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="recordingType" value="video">
+                                    <span>📹 Video Recording</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="schedule-date">Date</label>
+                            <input type="date" id="schedule-date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="schedule-time">Time</label>
+                            <input type="time" id="schedule-time" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="recording-duration">Duration (minutes)</label>
+                            <input type="number" id="recording-duration" min="1" max="60" value="5" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="schedule-note">Note (optional)</label>
+                            <textarea id="schedule-note" placeholder="Add a note for this scheduled recording..."></textarea>
+                        </div>
+
+                        <div class="modal-actions">
+                            <button type="button" class="action-btn cancel-btn">CANCEL</button>
+                            <button type="submit" class="action-btn primary">SCHEDULE</button>
+                        </div>
+                    </form>
+
+                    <div class="scheduled-recordings">
+                        <h3>SCHEDULED RECORDINGS</h3>
+                        <div id="scheduled-list">
+                            <!-- Scheduled recordings will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Streaming Modal -->
+        <div id="stream-modal" class="modal">
+            <div class="modal-content stream-modal">
+                <div class="modal-header">
+                    <h2 id="stream-title">LIVE STREAM</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="stream-container">
+                        <!-- Video Stream Container -->
+                        <div id="video-stream-container" class="video-container hidden">
+                            <video id="live-video-stream" autoplay></video>
+                            <div class="stream-overlay">
+                                <span class="stream-status">● LIVE</span>
+                                <span class="stream-device"></span>
+                                <span class="stream-time">00:00:00</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Audio Stream Container -->
+                        <div id="audio-stream-container" class="audio-container hidden">
+                            <audio id="live-audio-stream" autoplay></audio>
+                            <div class="audio-visualizer">
+                                <canvas id="audio-canvas"></canvas>
+                            </div>
+                            <div class="audio-info">
+                                <span class="stream-status">● LIVE</span>
+                                <span class="stream-device"></span>
+                                <span class="stream-time">00:00:00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stream-controls">
+                        <button class="stream-control-btn" id="toggle-stream">
+                            <span>⏸️ PAUSE</span>
+                        </button>
+                        <button class="stream-control-btn" id="mute-stream">
+                            <span>🔇 MUTE</span>
+                        </button>
+                        <button class="stream-control-btn" id="fullscreen-stream">
+                            <span>⛶ FULLSCREEN</span>
+                        </button>
+                        <button class="stream-control-btn danger" id="stop-stream">
+                            <span>⏹️ STOP STREAM</span>
+                        </button>
+                    </div>
+                    
+                    <div class="stream-info">
+                        <div class="info-item">
+                            <span class="info-label">Quality:</span>
+                            <span id="stream-quality">HD 1080p</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Bitrate:</span>
+                            <span id="stream-bitrate">2.5 Mbps</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Latency:</span>
+                            <span id="stream-latency">< 500ms</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Device Name Edit Modal -->
+        <div id="edit-name-modal" class="modal">
+            <div class="modal-content compact">
+                <div class="modal-header">
+                    <h2>EDIT DEVICE NAME</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-name-form">
+                        <div class="form-group">
+                            <label for="new-device-name">New Device Name</label>
+                            <input type="text" id="new-device-name" name="name" required>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="action-btn cancel-btn">CANCEL</button>
+                            <button type="submit" class="action-btn primary">UPDATE NAME</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Modal -->
+        <div id="map-modal" class="modal">
+            <div class="modal-content map-modal">
+                <div class="modal-header">
+                    <h2 id="map-title">DEVICE LOCATION</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="map-container" style="height: 500px; width: 100%;"></div>
+                    <div class="map-info">
+                        <div class="info-item">
+                            <span class="info-label">Coordinates:</span>
+                            <span id="map-coordinates">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Timestamp:</span>
+                            <span id="map-timestamp">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Address:</span>
+                            <span id="map-address">N/A</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script src="config.js"></script>
+    <script src="api-service.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

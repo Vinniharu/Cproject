@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2 - Station - Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="title-bar">
+        <div class="title-bar-text">C2 - Station</div>
+        <div class="title-bar-controls">
+            <button class="title-bar-button" id="minimize-btn">─</button>
+            <button class="title-bar-button" id="maximize-btn">□</button>
+            <button class="title-bar-button" id="close-btn">✕</button>
+        </div>
+    </div>
+
+    <div class="login-container">
+        <div class="login-box">
+            <div class="logo-section">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="30" cy="30" r="28" stroke="#00d4ff" stroke-width="4"/>
+                            <path d="M30 10 L30 50 M10 30 L50 30" stroke="#00d4ff" stroke-width="3"/>
+                            <circle cx="30" cy="30" r="8" fill="#00d4ff"/>
+                        </svg>
+                    </div>
+                    <h1>C2 - STATION</h1>
+                    <p class="tagline">Command & Control Interface</p>
+                </div>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <input type="text" id="username" placeholder="Username" required>
+                    <span class="input-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 10C12.7614 10 15 7.76142 15 5C15 2.23858 12.7614 0 10 0C7.23858 0 5 2.23858 5 5C5 7.76142 7.23858 10 10 10Z" fill="#00d4ff"/>
+                            <path d="M10 12.5C4.475 12.5 0 16.975 0 22.5C0 23.325 0.675 24 1.5 24H18.5C19.325 24 20 23.325 20 22.5C20 16.975 15.525 12.5 10 12.5Z" fill="#00d4ff"/>
+                        </svg>
+                    </span>
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Password" required>
+                    <span class="input-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M15 7H14V5C14 2.24 11.76 0 9 0C6.24 0 4 2.24 4 5V7H3C1.35 7 0 8.35 0 10V17C0 18.65 1.35 20 3 20H15C16.65 20 18 18.65 18 17V10C18 8.35 16.65 7 15 7ZM9 15C7.35 15 6 13.65 6 12C6 10.35 7.35 9 9 9C10.65 9 12 10.35 12 12C12 13.65 10.65 15 9 15ZM12 7H6V5C6 3.35 7.35 2 9 2C10.65 2 12 3.35 12 5V7Z" fill="#00d4ff"/>
+                        </svg>
+                    </span>
+                </div>
+                
+                <button type="submit" class="login-button">
+                    <span>INITIALIZE CONNECTION</span>
+                    <div class="button-glow"></div>
+                </button>
+                
+                <div id="error-message" class="error-message"></div>
+            </form>
+            
+            <div class="system-info">
+                <div class="info-item">
+                    <span class="info-label">STATUS:</span>
+                    <span class="info-value" id="status">SECURE</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">ENCRYPTION:</span>
+                    <span class="info-value">AES-256</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="background-animation">
+            <div class="grid-overlay"></div>
+            <div class="scan-line"></div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="api-service.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>

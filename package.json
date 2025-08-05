@@ -1,0 +1,57 @@
+{
+  "name": "c2-station",
+  "productName": "C2 - Station",
+  "version": "1.0.0",
+  "description": "Command & Control Station for device monitoring and management",
+  "license": "MIT",
+  "author": "Stephen Fagbelu",
+  "type": "commonjs",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "build-mac": "electron-builder --mac",
+    "build-linux": "electron-builder --linux",
+    "dist": "electron-builder --publish=never",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "appId": "com.stephenfagbelu.c2station",
+    "productName": "C2 - Station",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules",
+      "node_modules/electron/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/eyeofc2.png",
+      "publisherName": "Stephen Fagbelu"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/eyeofc2.png",
+      "category": "public.app-category.productivity"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/eyeofc2.png",
+      "category": "Office"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^37.2.3",
+    "electron-builder": "^24.6.4"
+  }
+}

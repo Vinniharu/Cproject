@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2 - Station - Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard-styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="title-bar">
+            <div class="title-bar-text">C2 - Station - Admin Panel</div>
+            <div class="title-bar-controls">
+                <button class="title-bar-button" id="minimize-btn">─</button>
+                <button class="title-bar-button" id="maximize-btn">□</button>
+                <button class="title-bar-button" id="close-btn">✕</button>
+            </div>
+        </div>
+
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1 class="dashboard-title">C2 - STATION ADMIN</h1>
+                <span class="status-indicator">● ADMINISTRATOR ACCESS</span>
+            </div>
+            <div class="header-center">
+                <nav class="main-nav">
+                    <button class="nav-button active" data-view="users">USER MANAGEMENT</button>
+                    <button class="nav-button" data-view="devices">DEVICE MAPPING</button>
+                    <button class="nav-button" data-view="permissions">ACCESS CONTROL</button>
+                    <button class="nav-button" data-view="settings">SYSTEM SETTINGS</button>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span class="user-role">ADMIN</span>
+                    <span class="user-name"></span>
+                </div>
+                <button class="action-btn" onclick="window.location.href='dashboard.html'">BACK TO MAIN</button>
+                <button class="logout-btn">LOGOUT</button>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <!-- User Management View -->
+            <div id="users-view" class="view-container active">
+                <div class="view-header">
+                    <h2>USER MANAGEMENT</h2>
+                    <div class="view-actions">
+                        <input type="text" class="search-input" placeholder="Search users..." id="user-search">
+                        <button class="action-btn primary" id="add-user-btn">+ ADD USER</button>
+                    </div>
+                </div>
+                
+                <div class="users-table-container">
+                    <table class="users-table" id="users-table">
+                        <thead>
+                            <tr>
+                                <th>USERNAME</th>
+                                <th>NAME</th>
+                                <th>ROLE</th>
+                                <th>PERMISSIONS</th>
+                                <th>STATUS</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            <!-- Users will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Device Mapping View -->
+            <div id="devices-view" class="view-container">
+                <div class="view-header">
+                    <h2>DEVICE MAPPING MANAGEMENT</h2>
+                    <div class="view-actions">
+                        <div class="device-stats-summary">
+                            <div class="stat-item">
+                                <span class="stat-value" id="total-devices-admin">0</span>
+                                <span class="stat-label">Total Devices</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="mapped-devices-admin">0</span>
+                                <span class="stat-label">Mapped</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="unmapped-devices-admin">0</span>
+                                <span class="stat-label">Unmapped</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="mapping-rate-admin">0%</span>
+                                <span class="stat-label">Mapping Rate</span>
+                            </div>
+                        </div>
+                        <button class="action-btn secondary" id="refresh-devices-btn">REFRESH</button>
+                    </div>
+                </div>
+                
+                <!-- Unmapped Devices Section -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h3>Devices Requiring Name Assignment</h3>
+                        <span class="section-count" id="unmapped-count">0</span>
+                    </div>
+                    <div class="unmapped-devices-container" id="unmapped-devices-container">
+                        <div class="loading-message">Loading unmapped devices...</div>
+                    </div>
+                </div>
+                
+                <!-- Mapped Devices Section -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h3>Mapped Devices</h3>
+                        <span class="section-count" id="mapped-count">0</span>
+                    </div>
+                    <div class="mapped-devices-container" id="mapped-devices-container">
+                        <div class="loading-message">Loading mapped devices...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Access Control View -->
+            <div id="permissions-view" class="view-container">
+                <div class="view-header">
+                    <h2>ACCESS CONTROL MATRIX</h2>
+                </div>
+                <div class="permissions-content">
+                    <div class="permission-stats">
+                        <div class="stat-card">
+                            <h3>AUDIO ACCESS</h3>
+                            <div class="stat-value" id="audio-users">0</div>
+                            <div class="stat-label">Users with Audio</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>VIDEO ACCESS</h3>
+                            <div class="stat-value" id="video-users">0</div>
+                            <div class="stat-label">Users with Video</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>LOCATION ACCESS</h3>
+                            <div class="stat-value" id="location-users">0</div>
+                            <div class="stat-label">Users with Location</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>FULL ACCESS</h3>
+                            <div class="stat-value" id="full-access-users">0</div>
+                            <div class="stat-label">Complete Access</div>
+                        </div>
+                    </div>
+                    <div class="permissions-matrix" id="permissions-matrix">
+                        <!-- Permission matrix will be generated here -->
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- System Settings View -->
+            <div id="settings-view" class="view-container">
+                <div class="view-header">
+                    <h2>SYSTEM SETTINGS</h2>
+                </div>
+                <div class="settings-content">
+                    <div class="settings-section">
+                        <h3>DEFAULT USER SETTINGS</h3>
+                        <div class="setting-item">
+                            <label>Default Permissions:</label>
+                            <div class="permission-checkboxes">
+                                <label><input type="checkbox" id="default-audio"> Audio Access</label>
+                                <label><input type="checkbox" id="default-video"> Video Access</label>
+                                <label><input type="checkbox" id="default-location"> Location Access</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>SYSTEM LIMITS</h3>
+                        <div class="setting-item">
+                            <label>Maximum Users:</label>
+                            <input type="number" id="max-users" value="100" min="1" max="1000">
+                        </div>
+                        <div class="setting-item">
+                            <label>Auto-disable inactive users after (days):</label>
+                            <input type="number" id="auto-disable-days" value="30" min="1" max="365">
+                        </div>
+                    </div>
+                    <button class="action-btn primary" id="save-settings">SAVE SETTINGS</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Add/Edit User Modal -->
+        <div id="user-modal" class="modal">
+            <div class="modal-content user-modal">
+                <div class="modal-header">
+                    <h2 id="user-modal-title">ADD NEW USER</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="user-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="user-username">Username</label>
+                                <input type="text" id="user-username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="user-name">Full Name</label>
+                                <input type="text" id="user-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="user-password">Password</label>
+                                <input type="password" id="user-password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="user-role">Role</label>
+                                <select id="user-role">
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="user-status">Status</label>
+                                <select id="user-status">
+                                    <option value="active">Active</option>
+                                    <option value="disabled">Disabled</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="permissions-section">
+                            <h3>ACCESS PERMISSIONS</h3>
+                            <div class="permissions-grid">
+                                <label class="permission-item">
+                                    <input type="checkbox" id="perm-audio" name="permissions" value="audio">
+                                    <span class="permission-label">
+                                        <span class="permission-icon">🎤</span>
+                                        <span>Audio Recording</span>
+                                    </span>
+                                </label>
+                                <label class="permission-item">
+                                    <input type="checkbox" id="perm-video" name="permissions" value="video">
+                                    <span class="permission-label">
+                                        <span class="permission-icon">📹</span>
+                                        <span>Video Recording</span>
+                                    </span>
+                                </label>
+                                <label class="permission-item">
+                                    <input type="checkbox" id="perm-location" name="permissions" value="location">
+                                    <span class="permission-label">
+                                        <span class="permission-icon">📍</span>
+                                        <span>Location Tracking</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="action-btn cancel-btn">CANCEL</button>
+                            <button type="submit" class="action-btn primary">SAVE USER</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirm-modal" class="modal">
+            <div class="modal-content confirm-modal">
+                <h2 id="confirm-title">⚠️ CONFIRM ACTION</h2>
+                <p id="confirm-message">Are you sure you want to perform this action?</p>
+                <div class="modal-actions">
+                    <button class="action-btn cancel-btn" id="confirm-cancel">CANCEL</button>
+                    <button class="action-btn danger" id="confirm-action">CONFIRM</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="api-service.js"></script>
+    <script src="admin-dashboard.js"></script>
+</body>
+</html>
